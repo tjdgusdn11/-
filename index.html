@@ -1,143 +1,150 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>모바일신분증</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #f5f5f5;
-    }
+<title>모바일 신분증</title>
 
-    .container {
-      padding: 15px;
-      max-width: 500px;
-      margin: auto;
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    .title {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
+<style>
+body {
+  margin:0;
+  font-family:sans-serif;
+  background:#f2f3f5;
+}
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+/* 전체 컨테이너 (핸드폰 꽉 채우기) */
+.container {
+  max-width:100%;
+  margin:0 auto;
+}
 
-    .photo {
-      width: 70px;
-      height: 70px;
-      background: #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-    }
+/* 상단 */
+.header {
+  padding:15px;
+  background:white;
+  font-weight:bold;
+  font-size:18px;
+}
 
-    .info {
-      font-size: 14px;
-    }
+/* 카드 */
+.card {
+  background:white;
+  margin:15px;
+  padding:15px;
+  border-radius:12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
 
-    .name {
-      font-weight: bold;
-    }
+.photo {
+  width:80px;
+  height:80px;
+  background:#ddd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  border-radius:6px;
+}
 
-    .progress-wrap {
-      margin-top: 15px;
-    }
+/* 정보 */
+.info {
+  font-size:14px;
+}
 
-    .progress-text {
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
+/* 타이머 */
+.timer {
+  margin:0 15px;
+  font-size:14px;
+}
 
-    .progress {
-      height: 6px;
-      background: #ddd;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+/* 바 */
+.bar {
+  margin:5px 15px 15px;
+  height:6px;
+  background:#ddd;
+  border-radius:10px;
+  overflow:hidden;
+}
 
-    .bar {
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(to right, blue, purple);
-      animation: load 30s linear infinite;
-    }
+.bar-inner {
+  height:100%;
+  width:100%;
+  background:linear-gradient(to right, blue, purple);
+}
 
-    @keyframes load {
-      from { width: 100%; }
-      to { width: 0%; }
-    }
+/* 버튼 */
+.btn {
+  margin:15px;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:15px;
+  border-radius:10px;
+  font-weight:bold;
+}
 
-    button {
-      width: 100%;
-      margin-top: 15px;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: black;
-      color: white;
-      font-size: 16px;
-    }
+/* QR 영역 */
+.qr-box {
+  display:none;
+  justify-content:center;
+  margin:20px 0 40px;
+}
 
-    .qr {
-      display: none;
-      margin-top: 15px;
-      text-align: center;
-    }
+/* ⭐ 핵심: QR 크기 제한 */
+#qrcode {
+  width:220px;
+  height:220px;
+}
 
-    .qr img {
-      width: 180px;
-    }
-  </style>
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <div class="title">모바일 신분증</div>
+  <div class="header">모바일 신분증</div>
 
   <div class="card">
     <div class="photo">사진</div>
-
     <div class="info">
-      <div class="name">성현우</div>
-      <div>060219-*******</div>
-      <div>전주시 덕진구</div>
+      <b>성현우</b><br>
+      060219-*******<br>
+      전주시 덕진구
     </div>
   </div>
 
-  <div class="progress-wrap">
-    <div class="progress-text">30초</div>
+  <div class="timer">30초</div>
 
-    <div class="progress">
-      <div class="bar"></div>
-    </div>
+  <div class="bar">
+    <div class="bar-inner"></div>
   </div>
 
-  <button onclick="showQR()">QR 표시</button>
+  <div class="btn" onclick="showQR()">QR 표시</div>
 
-  <div class="qr" id="qr">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=IDCARD">
+  <div class="qr-box" id="qrBox">
+    <div id="qrcode"></div>
   </div>
 
 </div>
 
 <script>
-  function showQR() {
-    const qr = document.getElementById("qr");
-    qr.style.display = qr.style.display === "block" ? "none" : "block";
-  }
+function showQR(){
+  document.getElementById("qrBox").style.display="flex";
+
+  document.getElementById("qrcode").innerHTML="";
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: "*********",   // 주소 숨김 처리
+    width: 220,
+    height: 220
+  });
+}
 </script>
 
 </body>
