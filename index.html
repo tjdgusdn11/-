@@ -8,157 +8,133 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-body {
+body{
   margin:0;
+  background:#f5f5f5;
   font-family:sans-serif;
-  background:#f2f3f5;
 }
 
-/* 상단 */
-.header {
-  display:flex;
-  justify-content:space-between;
+.header{
   padding:15px;
-  background:white;
   font-weight:bold;
+  font-size:20px;
 }
 
-/* 카드 */
-.container {
+.container{
+  background:#fff;
+  margin:15px;
+  border-radius:20px;
   padding:20px;
 }
 
-.card {
-  background:white;
-  border-radius:20px;
-  padding:25px;
-  max-width:420px;
-  margin:0 auto;
-  min-height:350px;
-  position:relative;
-}
-
-/* 🔥 사진 크게 */
-#profile {
+.photo{
   width:150px;
   height:150px;
-  border-radius:12px;
-  object-fit:cover;
+  background:#ddd;
+  border-radius:15px;
+  margin:0 auto;
   display:block;
-  margin:0 auto 15px auto;
 }
 
-/* 텍스트 */
-.name {
-  font-size:22px;
+.name{
   font-weight:bold;
+  font-size:20px;
+  margin-top:15px;
 }
 
-.info {
-  font-size:14px;
+.sub{
   color:#555;
+  margin-top:5px;
 }
 
-/* QR */
-#qr {
+#qr{
   position:absolute;
   right:20px;
   bottom:20px;
-  width:110px;
-  height:110px;
-  display:none;
 }
 
-/* 하단 */
-.bottom {
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:15px;
-  background:#f2f3f5;
+.timer-wrap{
+  margin:20px;
 }
 
-/* 타이머 */
-.timer {
-  margin-bottom:10px;
-}
-
-.bar {
+.bar{
   height:6px;
   background:#ddd;
-  border-radius:5px;
+  border-radius:10px;
   overflow:hidden;
 }
 
-.bar-inner {
+.bar-inner{
   height:100%;
   width:100%;
-  background:linear-gradient(to right,blue,purple);
+  background:linear-gradient(to right, blue, purple);
 }
 
-/* 버튼 */
-.btn {
+.bottom{
+  position:fixed;
+  bottom:0;
   width:100%;
-  background:black;
-  color:white;
-  padding:16px;
-  text-align:center;
-  border-radius:12px;
+  padding:15px;
+  background:#fff;
 }
 
-/* 🔥 설정 화면 */
-#settings {
+.btn{
+  background:#000;
+  color:#fff;
+  text-align:center;
+  padding:15px;
+  border-radius:10px;
+}
+
+#settings{
   display:none;
   padding:20px;
 }
 
-input {
+input{
+  display:block;
+  margin:10px 0;
   width:100%;
   padding:10px;
-  margin:5px 0;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div>정부24</div>
-  <div id="menuBtn">≡</div>
-</div>
+<div class="header" onclick="tap()">정부24</div>
 
-<!-- 메인 -->
 <div class="container">
-  <div class="card">
+  <div style="position:relative">
 
-    <img id="profile" src="https://placehold.co/150">
+    <!-- 사진 (가운데 위) -->
+    <img id="img" class="photo" src="">
 
-    <div class="name" id="name">홍길동</div>
-    <div class="info" id="dob">20000101-******</div>
-    <div class="info" id="addr">********</div>
-
+    <!-- QR -->
     <div id="qr"></div>
 
+    <!-- 정보 -->
+    <div class="name" id="name">홍길동</div>
+    <div class="sub" id="dob">20000101-1234567</div>
+    <div class="sub" id="addr">서울시 강남구</div>
+
   </div>
 </div>
 
+<!-- 타이머 -->
+<div class="timer-wrap">
+  <div id="time">30초</div>
+  <div class="bar">
+    <div id="bar" class="bar-inner"></div>
+  </div>
+</div>
+
+<!-- 버튼 -->
 <div class="bottom">
-
-  <div class="timer">
-    <div id="timeText">30초</div>
-    <div class="bar">
-      <div class="bar-inner" id="bar"></div>
-    </div>
-  </div>
-
-  <div class="btn" onclick="toggle()" id="btn">
-    QR 표시
-  </div>
-
+  <div class="btn" id="btn" onclick="toggle()">QR 표시</div>
 </div>
 
-<!-- 🔥 설정 -->
+<!-- 설정 -->
 <div id="settings">
   <h3>설정</h3>
 
@@ -172,8 +148,54 @@ input {
 </div>
 
 <script>
-let isQR=false;
 
+let isQR=false;
+let tapCount=0;
+
+// 저장 데이터
+let savedName="홍길동";
+let savedDob1="20000101";
+let savedDob2="1234567";
+let savedAddr="서울시 강남구";
+
+// 🔥 5번 클릭 설정
+function tap(){
+  tapCount++;
+  if(tapCount===5){
+    document.querySelector(".container").style.display="none";
+    document.querySelector(".bottom").style.display="none";
+    document.getElementById("settings").style.display="block";
+    tapCount=0;
+  }
+}
+
+// 저장
+function save(){
+  savedName = document.getElementById("setName").value || savedName;
+  savedDob1 = document.getElementById("setDob1").value || savedDob1;
+  savedDob2 = document.getElementById("setDob2").value || savedDob2;
+  savedAddr = document.getElementById("setAddr").value || savedAddr;
+
+  document.getElementById("name").innerText = savedName;
+  document.getElementById("dob").innerText = savedDob1 + "-" + savedDob2;
+  document.getElementById("addr").innerText = savedAddr;
+
+  // 사진
+  const file=document.getElementById("setImg").files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=function(e){
+      document.getElementById("img").src=e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+
+  document.querySelector(".container").style.display="block";
+  document.querySelector(".bottom").style.display="block";
+  document.getElementById("settings").style.display="none";
+}
+
+// QR 생성
 function makeQR(){
   const qr=document.getElementById("qr");
   qr.innerHTML="";
@@ -184,6 +206,7 @@ function makeQR(){
   });
 }
 
+// 토글
 function toggle(){
   const qr=document.getElementById("qr");
   const dob=document.getElementById("dob");
@@ -193,77 +216,34 @@ function toggle(){
   if(!isQR){
     makeQR();
     qr.style.display="block";
-    dob.innerText="20000101-******";
-    addr.innerText="********";
+
+    dob.innerText = savedDob1 + "-******";
+    addr.innerText = "********";
+
     btn.innerText="상세정보 표시";
     isQR=true;
-  } else {
+
+  }else{
     qr.style.display="none";
-    dob.innerText="20000101-1234567";
-    addr.innerText="서울시 강남구";
+
+    dob.innerText = savedDob1 + "-" + savedDob2;
+    addr.innerText = savedAddr;
+
     btn.innerText="QR 표시";
     isQR=false;
   }
 }
 
-/* 타이머 */
-let time=30;
+// 타이머
+let t=30;
 setInterval(()=>{
-  time--;
-  if(time<0) time=30;
+  t--;
+  if(t<0) t=30;
 
-  document.getElementById("timeText").innerText=time+"초";
-  document.getElementById("bar").style.width=(time/30*100)+"%";
+  document.getElementById("time").innerText=t+"초";
+  document.getElementById("bar").style.width=(t/30*100)+"%";
 },1000);
 
-/* 🔥 설정 5번 */
-let count=0;
-let start=0;
-
-document.getElementById("menuBtn").onclick=()=>{
-  const now=Date.now();
-
-  if(now-start>2000){
-    count=1;
-    start=now;
-  } else {
-    count++;
-  }
-
-  if(count>=5){
-    document.querySelector(".container").style.display="none";
-    document.querySelector(".bottom").style.display="none";
-    document.getElementById("settings").style.display="block";
-    count=0;
-  }
-};
-
-/* 저장 */
-function save(){
-  const name=document.getElementById("setName").value;
-  const dob1=document.getElementById("setDob1").value;
-  const dob2=document.getElementById("setDob2").value;
-  const addr=document.getElementById("setAddr").value;
-
-  if(name) document.getElementById("name").innerText=name;
-  if(dob1 && dob2){
-    document.getElementById("dob").innerText=dob1+"-"+dob2;
-  }
-  if(addr) document.getElementById("addr").innerText=addr;
-
-  const file=document.getElementById("setImg").files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      document.getElementById("profile").src=e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  document.querySelector(".container").style.display="block";
-  document.querySelector(".bottom").style.display="block";
-  document.getElementById("settings").style.display="none";
-}
 </script>
 
 </body>
